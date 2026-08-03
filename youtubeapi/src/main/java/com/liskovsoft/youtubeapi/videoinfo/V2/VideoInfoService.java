@@ -18,7 +18,6 @@ import com.liskovsoft.youtubeapi.videoinfo.models.VideoInfo;
 import com.liskovsoft.youtubeapi.videoinfo.models.VideoInfoHls;
 import com.liskovsoft.youtubeapi.videoinfo.models.VideoInfoReel;
 
-import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
@@ -29,20 +28,20 @@ public class VideoInfoService extends VideoInfoServiceBase {
     private static VideoInfoService sInstance;
     private final VideoInfoApi mVideoInfoApi;
     private final static AppClient[] VIDEO_INFO_TYPE_LIST = {
+            AppClient.TV, // No PoToken required. Primary client for PhoneTube.
+            AppClient.TV_DOWNGRADED, // No PoToken required.
+            AppClient.ANDROID_REEL, // Doesn't require pot and cipher
             AppClient.VISIONOS,
-            AppClient.WEB_EMBED, // Restricted (18+) videos
-            AppClient.TV_DOWNGRADED,
-            AppClient.TV, // Supports auth. Fixes "please sign in" bug! (the best for Premium users)
-            AppClient.ANDROID_REEL, // doesn't require pot and cipher
+            AppClient.TV_LEGACY,
+            AppClient.TV_SIMPLY, // hangs?
+            AppClient.WEB_EMBED, // Restricted (18+) videos, requires PoToken
             AppClient.WEB, // Fix video clip blocked in current location
             AppClient.WEB_SAFARI,
             AppClient.IOS,
             AppClient.GEO, // Fix video clip blocked in current location
             AppClient.MWEB, // single audio language
-            AppClient.TV_LEGACY,
             AppClient.TV_EMBED, // single audio language
             AppClient.ANDROID_VR, // doesn't require pot and cipher (often hangs?)
-            AppClient.TV_SIMPLY, // hangs?
             //AppClient.ANDROID_SDK_LESS, // doesn't require pot (hangs on Cronet!)
     };
     @Nullable
@@ -71,7 +70,6 @@ public class VideoInfoService extends VideoInfoServiceBase {
         }
 
         //initInfoTypeIfNeeded();
-        reorderTypeListIfNeeded();
 
         AppService.instance().resetClientPlaybackNonce(); // unique value per each video info
 
@@ -93,18 +91,6 @@ public class VideoInfoService extends VideoInfoServiceBase {
         mIsUnplayable = result.isUnplayable();
 
         return result;
-    }
-
-    private void reorderTypeListIfNeeded() {
-        if (getData().isFormatEnabled(MediaServiceData.FORMATS_EXTENDED_HLS)) {
-            if (VIDEO_INFO_TYPE_LIST[0] != IOS_CLIENT) {
-                Helpers.move(VIDEO_INFO_TYPE_LIST, Arrays.asList(VIDEO_INFO_TYPE_LIST).indexOf(IOS_CLIENT), 0);
-            }
-        } else {
-            if (VIDEO_INFO_TYPE_LIST[0] == IOS_CLIENT) {
-                Helpers.move(VIDEO_INFO_TYPE_LIST, 0, 2);
-            }
-        }
     }
 
     public VideoInfo getAuthVideoInfo(String videoId, String clickTrackingParams) {
