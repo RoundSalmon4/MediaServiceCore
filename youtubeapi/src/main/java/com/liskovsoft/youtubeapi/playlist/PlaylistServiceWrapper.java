@@ -73,9 +73,9 @@ public class PlaylistServiceWrapper extends PlaylistService {
     }
 
     private List<PlaylistInfo> getCachedPlaylistInfo(List<PlaylistInfo> playlistsInfos, String videoId) {
-        mCachedPlaylistInfos = playlistsInfos;
         List<ItemGroup> playlistGroups = PlaylistGroupServiceImpl.getPlaylistGroups();
         if (!playlistGroups.isEmpty()) {
+            mCachedPlaylistInfos = playlistsInfos;
             List<PlaylistInfo> result = new ArrayList<>();
 
             if (playlistsInfos != null && !playlistsInfos.isEmpty()) {
@@ -139,19 +139,14 @@ public class PlaylistServiceWrapper extends PlaylistService {
         ItemGroup playlistGroup = PlaylistGroupServiceImpl.findPlaylistGroup(playlistId);
 
         if (playlistGroup == null) {
-            String title = findCashedTitle(playlistId);
+            String title = findTitle(playlistId);
 
             if (title == null) {
                 return;
             }
 
-            // YT playlist id may be changed over time
-            playlistGroup = PlaylistGroupServiceImpl.findPlaylistGroupByTitle(title);
-
-            if (playlistGroup == null) {
-                playlistGroup = PlaylistGroupServiceImpl.createPlaylistGroup(
-                        playlistId, title, (String) null);
-            }
+            playlistGroup = PlaylistGroupServiceImpl.createPlaylistGroup(
+                    playlistId, title, (String) null);
         }
 
         MediaItem cachedVideo = PlaylistGroupServiceImpl.cachedItem;
@@ -200,7 +195,7 @@ public class PlaylistServiceWrapper extends PlaylistService {
         // First remove cached playlists
         PlaylistGroupServiceImpl.removePlaylistGroup(playlistId);
 
-        // NOTE: getPlaylistInfo doesn't contain foreign (imported) playlists. Use browse instead.
+        // NOTE: getPlaylistInfo doesn't contain foreign playlists. Use browse instead.
         MediaGroup myPlaylists = BrowseService2Wrapper.INSTANCE.getMyPlaylists();
         if (myPlaylists != null
                 && Helpers.containsIf(myPlaylists.getMediaItems(), group -> Helpers.equals(group.getPlaylistId(), playlistId))) {
@@ -235,12 +230,14 @@ public class PlaylistServiceWrapper extends PlaylistService {
     }
 
     private PlaylistInfo findFirst(List<PlaylistInfo> playlistsInfos, ItemGroup itemGroup) {
+        //return Helpers.findFirst(playlistsInfos, item -> Helpers.equals(item.getTitle(), itemGroup.getTitle())); // More robust to find by id?
+        //return Helpers.findFirst(playlistsInfos, item -> Helpers.equals(item.getPlaylistId(), itemGroup.getId()));
         // Can't match only by playlistId because the id possible may change during the time
         return Helpers.findFirst(playlistsInfos, item -> Helpers.equals(item.getTitle(), itemGroup.getTitle())
                 || Helpers.equals(item.getPlaylistId(), itemGroup.getId()));
     }
 
-    private String findCashedTitle(String playlistId) {
+    private String findTitle(String playlistId) {
         PlaylistInfo first = Helpers.findFirst(mCachedPlaylistInfos, item -> Helpers.equals(item.getPlaylistId(), playlistId));
 
         return first != null ? first.getTitle() : null;
