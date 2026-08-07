@@ -183,7 +183,9 @@ public class MediaServiceData {
 
     public boolean isFormatEnabled(int formats) {
         if (mEnabledFormats == FORMATS_NONE) {
-            setFormatEnabled(FORMATS_DASH | FORMATS_URL, true);
+            setFormatEnabled(FORMATS_DASH | FORMATS_URL | FORMATS_EXTENDED_HLS, true);
+        } else if ((mEnabledFormats & FORMATS_EXTENDED_HLS) == 0) {
+            setFormatEnabled(FORMATS_EXTENDED_HLS, true);
         }
 
         return (mEnabledFormats & formats) == formats;

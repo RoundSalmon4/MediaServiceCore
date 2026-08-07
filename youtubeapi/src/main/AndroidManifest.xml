@@ -3,7 +3,7 @@
           package="com.liskovsoft.youtubeapi">
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- WebViewUtils -->
-    <uses-feature android:name="android.hardware.usb.host" />
+    <uses-feature android:name="android.hardware.usb.host" android:required="false" />
 
     <!-- NOTE: use older api -->
     <uses-sdk tools:overrideLibrary="

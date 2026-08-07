@@ -504,6 +504,27 @@ public class YouTubeMediaItem implements MediaItem {
         mBadgeText = badgeText;
     }
 
+    public String getLengthText() {
+        return mLengthText;
+    }
+
+    public void setLengthText(String lengthText) {
+        mLengthText = lengthText;
+    }
+
+    public void setDurationMs(long durationMs) {
+        if (durationMs <= 0) {
+            return;
+        }
+        long totalSeconds = durationMs / 1000;
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+        mLengthText = hours > 0
+                ? String.format(java.util.Locale.US, "%d:%02d:%02d", hours, minutes, seconds)
+                : String.format(java.util.Locale.US, "%d:%02d", minutes, seconds);
+    }
+
     @Override
     public boolean hasNewContent() {
         return mHasNewContent;
