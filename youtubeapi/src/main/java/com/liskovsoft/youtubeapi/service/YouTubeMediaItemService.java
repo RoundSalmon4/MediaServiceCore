@@ -23,6 +23,7 @@ import com.liskovsoft.youtubeapi.block.data.SegmentList;
 import com.liskovsoft.youtubeapi.common.models.impl.mediaitem.BaseMediaItem;
 import com.liskovsoft.youtubeapi.dearrow.DeArrowService;
 import com.liskovsoft.youtubeapi.feedback.FeedbackService;
+import com.liskovsoft.youtubeapi.innertube.InnertubeService;
 import com.liskovsoft.youtubeapi.next.v2.WatchNextService;
 import com.liskovsoft.youtubeapi.next.v2.WatchNextServiceWrapper;
 import com.liskovsoft.youtubeapi.playlist.PlaylistService;
@@ -70,6 +71,20 @@ public class YouTubeMediaItemService implements MediaItemService {
 
     @Override
     public MediaItemFormatInfo getFormatInfo(String videoId, String clickTrackingParams) {
+        return selectPlaybackFormatInfo(videoId, clickTrackingParams);
+    }
+
+    private MediaItemFormatInfo selectPlaybackFormatInfo(String videoId, String clickTrackingParams) {
+        MediaItemFormatInfo formatInfo = getFormatInfoLegacy(videoId, clickTrackingParams);
+
+        if (formatInfo.isUnplayable()) {
+            formatInfo = getFormatInfoInnertube(videoId, clickTrackingParams);
+        }
+
+        return formatInfo;
+    }
+
+    private MediaItemFormatInfo getFormatInfoLegacy(String videoId, String clickTrackingParams) {
         MediaItemFormatInfo cachedFormatInfo = getCachedFormatInfo(videoId);
 
         if (cachedFormatInfo != null) {
@@ -87,24 +102,23 @@ public class YouTubeMediaItemService implements MediaItemService {
         return formatInfo;
     }
 
-    //@Override
-    //public MediaItemFormatInfo getFormatInfo(String videoId, String clickTrackingParams) {
-    //    //videoId = "K04WmBtVsOs"; // the testing video: Memories of Memories
-    //
-    //    MediaItemFormatInfo cachedFormatInfo = getCachedFormatInfo(videoId);
-    //
-    //    if (cachedFormatInfo != null) {
-    //        return cachedFormatInfo;
-    //    }
-    //
-    //    checkSigned();
-    //
-    //    MediaItemFormatInfo formatInfo = InnertubeService.createFormatInfo(videoId);
-    //
-    //    setCachedFormatInfo(formatInfo, clickTrackingParams);
-    //
-    //    return formatInfo;
-    //}
+    private MediaItemFormatInfo getFormatInfoInnertube(String videoId, String clickTrackingParams) {
+        //videoId = "K04WmBtVsOs"; // the testing video: Memories of Memories
+
+        MediaItemFormatInfo cachedFormatInfo = getCachedFormatInfo(videoId);
+
+        if (cachedFormatInfo != null) {
+            return cachedFormatInfo;
+        }
+
+        checkSigned();
+
+        MediaItemFormatInfo formatInfo = InnertubeService.createFormatInfo(videoId);
+
+        setCachedFormatInfo(formatInfo, clickTrackingParams);
+
+        return formatInfo;
+    }
 
     @Override
     public Observable<MediaItemFormatInfo> getFormatInfoObserve(MediaItem item) {
