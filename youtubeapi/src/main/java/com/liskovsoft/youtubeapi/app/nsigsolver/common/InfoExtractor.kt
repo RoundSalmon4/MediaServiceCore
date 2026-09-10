@@ -1,5 +1,6 @@
 package com.liskovsoft.youtubeapi.app.nsigsolver.common
 
+import com.liskovsoft.googlecommon.common.helpers.USER_AGENT_MOBILE_WEB
 import com.liskovsoft.sharedutils.okhttp.OkHttpManager
 import com.liskovsoft.youtubeapi.app.nsigsolver.provider.InfoExtractorError
 import kotlinx.coroutines.delay
@@ -11,7 +12,10 @@ internal abstract class InfoExtractor {
 
         while (true) {
             try {
-                val request = Request.Builder().url(url).build()
+                // A browser User-Agent is required; YouTube returns HTTP 404 for
+                // RSS and other plain HTTP endpoints when the default OkHttp UA
+                // (okhttp/x.y.z) is used.
+                val request = Request.Builder().url(url).header("User-Agent", USER_AGENT_MOBILE_WEB).build()
                 val content = OkHttpManager.instance().client.newCall(request).execute().use {
                     if (!it.isSuccessful) throw InfoExtractorError(formatError(errorMsg, "Unexpected code $it"))
                     it.body()?.string()
