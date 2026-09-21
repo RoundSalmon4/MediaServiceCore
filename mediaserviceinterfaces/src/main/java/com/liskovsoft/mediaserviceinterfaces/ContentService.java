@@ -18,6 +18,7 @@ public interface ContentService {
     MediaGroup getRecommended();
     MediaGroup getHistory();
     List<MediaGroup> getHome();
+    List<MediaGroup> getWhatToWatch();
     MediaGroup getSubscribedChannels();
     MediaGroup getSubscribedChannelsByNewContent();
     MediaGroup getSubscribedChannelsByName();
@@ -29,6 +30,7 @@ public interface ContentService {
      */
     MediaGroup getGroup(String reloadPageKey);
     MediaGroup continueGroup(MediaGroup mediaGroup);
+    List<MediaGroup> getPlaylist(String playlistId);
     void enableHistory(boolean enable);
     void clearHistory();
     void clearSearchHistory();
