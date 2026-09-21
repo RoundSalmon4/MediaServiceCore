@@ -177,7 +177,10 @@ public class MediaServiceData {
 
     public boolean isFormatEnabled(int formats) {
         if (mEnabledFormats == FORMATS_NONE) {
-            setFormatEnabled(FORMATS_ADAPTIVE, true);
+            setFormatEnabled(FORMATS_ADAPTIVE | FORMATS_EXTENDED_HLS, true);
+        } else if ((mEnabledFormats & FORMATS_EXTENDED_HLS) == 0) {
+            // Turn extended HLS on for installs whose saved flags predate it.
+            setFormatEnabled(FORMATS_EXTENDED_HLS, true);
         }
 
         return (mEnabledFormats & formats) == formats;

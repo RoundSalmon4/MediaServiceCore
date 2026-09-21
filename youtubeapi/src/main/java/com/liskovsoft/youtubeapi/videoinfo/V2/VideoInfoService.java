@@ -31,20 +31,20 @@ public class VideoInfoService extends VideoInfoServiceBase {
     private final VideoInfoApi mVideoInfoApi;
     // TODO: TV clients are broken because of recently introduced '-tcl' player variant (different nParam and nSignature)
     private final static AppClient[] CLIENT_LIST = {
-            AppClient.TV, // Supports auth. Fixes "please sign in" bug! (the best for Premium users)
-            AppClient.VISIONOS, // no url formats
-            AppClient.TV_DOWNGRADED, // works with old UAs like old Cobalt and old Xbox (non-tcl players)
+            AppClient.TV, // Auth-capable, needs a TV PoToken. First so signed-in sessions work.
+            AppClient.TV_DOWNGRADED, // No PoToken required.
+            AppClient.ANDROID_REEL, // Doesn't require pot and cipher
+            AppClient.VISIONOS,
+            AppClient.TV_LEGACY,
+            AppClient.TV_SIMPLY, // hangs?
+            AppClient.WEB_EMBED, // Restricted (18+) videos, requires PoToken
             AppClient.WEB, // Fix video clip blocked in current location
-            AppClient.WEB_EMBED, // Restricted (18+) videos (not working)
-            //AppClient.ANDROID_REEL, // doesn't require pot and cipher (hangs on all engines)
             AppClient.WEB_SAFARI,
             AppClient.IOS,
             AppClient.GEO, // Fix video clip blocked in current location
             AppClient.MWEB, // single audio language
-            //AppClient.TV_LEGACY,
-            //AppClient.TV_EMBED, // single audio language
+            AppClient.TV_EMBED, // single audio language
             AppClient.ANDROID_VR, // doesn't require pot and cipher (often hangs?)
-            //AppClient.TV_SIMPLY, // hangs?
             //AppClient.ANDROID_SDK_LESS, // doesn't require pot (hangs on Cronet!)
     };
     @Nullable

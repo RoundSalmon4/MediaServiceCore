@@ -261,6 +261,8 @@ class YouTubeContentService implements ContentService {
 
                 if (sections != null) {
                     result.addAll(sections);
+                } else {
+                    result.add(group);
                 }
             } else if (group != null) {
                 result.add(group);
@@ -277,6 +279,38 @@ class YouTubeContentService implements ContentService {
 
             emitGroups(emitter, getBrowseService2().getHome());
         });
+    }
+
+    @Override
+    public List<MediaGroup> getWhatToWatch() {
+        checkSigned();
+
+        kotlin.Pair<List<MediaGroup>, String> result = getBrowseService2().getWhatToWatch();
+        if (result == null) {
+            Log.e(TAG, "WhatToWatch group is empty");
+            return null;
+        }
+
+        List<MediaGroup> groups = result.getFirst();
+        if (groups == null) {
+            return null;
+        }
+
+        List<MediaGroup> expanded = new ArrayList<>();
+        for (MediaGroup group : groups) {
+            if (group != null && group.isEmpty()) {
+                List<MediaGroup> sections = getBrowseService2().continueEmptyGroup(group);
+                if (sections != null) {
+                    expanded.addAll(sections);
+                } else {
+                    expanded.add(group);
+                }
+            } else if (group != null) {
+                expanded.add(group);
+            }
+        }
+
+        return expanded;
     }
 
     @Override
@@ -600,6 +634,12 @@ class YouTubeContentService implements ContentService {
                         mediaGroup
                 );
         }
+    }
+
+    @Override
+    public List<MediaGroup> getPlaylist(String playlistId) {
+        kotlin.Pair<List<MediaGroup>, String> result = getBrowseService2().getPlaylist(playlistId);
+        return result != null ? result.getFirst() : null;
     }
 
     @Override
