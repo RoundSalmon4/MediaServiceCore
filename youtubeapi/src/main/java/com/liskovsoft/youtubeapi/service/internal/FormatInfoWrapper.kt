@@ -88,7 +88,10 @@ internal object FormatInfoWrapper {
     private fun selectPlaybackFormatInfo(videoId: String, clickTrackingParams: String?): MediaItemFormatInfo? {
         var formatInfo = getPrimaryProvider()(videoId, clickTrackingParams)
 
-        if (formatInfo != null && formatInfo.isUnplayable()) {
+        // The legacy path returns null when every client attempt fails
+        // (e.g. ConnectException). Fall back for both null and unplayable
+        // results so a second path can still produce stream data.
+        if (formatInfo == null || formatInfo.isUnplayable()) {
             formatInfo = getSecondaryProvider()(videoId, clickTrackingParams)
         }
 

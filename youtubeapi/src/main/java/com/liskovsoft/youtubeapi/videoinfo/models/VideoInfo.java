@@ -233,7 +233,7 @@ public class VideoInfo {
     }
 
     public boolean isExtendedHlsFormatsBroken() {
-        return !isLive() && getHlsManifestUrl() == null && isAdaptiveFullHD();
+        return getHlsManifestUrl() == null && getAdaptiveFormats() != null && !getAdaptiveFormats().isEmpty();
     }
 
     //public boolean hasExtendedHlsFormats() {
