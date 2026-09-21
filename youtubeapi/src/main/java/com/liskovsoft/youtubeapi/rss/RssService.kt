@@ -90,6 +90,8 @@ internal object RssService {
             if (first != null) {
                 item as YouTubeMediaItem
                 item.badgeText = first.badgeText
+                // Copy the duration via the interface so it works for any MediaItem impl.
+                item.setDurationMs(first.getDurationMs())
                 item.isLive = first.isLive
                 item.isUpcoming = first.isUpcoming
                 item.videoPreviewUrl = first.videoPreviewUrl

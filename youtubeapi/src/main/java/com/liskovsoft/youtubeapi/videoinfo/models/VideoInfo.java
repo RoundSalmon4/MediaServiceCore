@@ -231,7 +231,7 @@ public class VideoInfo {
     }
 
     public boolean isExtendedHlsFormatsBroken() {
-        return !isLive() && getHlsManifestUrl() == null && isAdaptiveFullHD();
+        return getHlsManifestUrl() == null && getAdaptiveFormats() != null && !getAdaptiveFormats().isEmpty();
     }
 
     //public boolean hasExtendedHlsFormats() {
@@ -428,8 +428,8 @@ public class VideoInfo {
      * TODO: remove when SABR parser will be fixed
      */
     private boolean isAdaptiveFormatsBroken() {
-        // TODO: live SABR formats still broken
-        if (mAdaptiveFormats == null || mAdaptiveFormats.isEmpty() || !isLive()) {
+        // TODO: remove when SABR parser will be fixed
+        if (mAdaptiveFormats == null || mAdaptiveFormats.isEmpty()) {
             return false;
         }
 

@@ -77,7 +77,10 @@ public class YouTubeMediaItemService implements MediaItemService {
     private MediaItemFormatInfo selectPlaybackFormatInfo(String videoId, String clickTrackingParams) {
         MediaItemFormatInfo formatInfo = getFormatInfoLegacy(videoId, clickTrackingParams);
 
-        if (formatInfo != null && formatInfo.isUnplayable()) {
+        // getFormatInfoLegacy returns null when every client attempt fails
+        // (e.g. ConnectException). Fall back to innertube for both null and
+        // unplayable results so a second path can still produce stream data.
+        if (formatInfo == null || formatInfo.isUnplayable()) {
             formatInfo = getFormatInfoInnertube(videoId, clickTrackingParams);
         }
 
