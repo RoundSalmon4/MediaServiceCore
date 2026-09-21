@@ -33,8 +33,12 @@ internal open class BrowseService2 {
         return getBrowseRowsTV(BrowseApiHelper::getHomeQuery, MediaGroup.TYPE_HOME)
     }
 
-    fun getTrending(): List<MediaGroup?>? {
-        return getBrowseRowsWeb(BrowseApiHelper.getTrendingQuery(AppClient.WEB), MediaGroup.TYPE_TRENDING)
+    fun getTrending(): Pair<List<MediaGroup?>?, String?>? {
+        return getBrowseRowsTV(BrowseApiHelper::getTrendingQuery, MediaGroup.TYPE_TRENDING)
+    }
+
+    fun getWhatToWatch(): Pair<List<MediaGroup?>?, String?>? {
+        return getBrowseRowsTV(BrowseApiHelper::getWhatToWatchQuery, MediaGroup.TYPE_HOME)
     }
 
     fun getSports(): Pair<List<MediaGroup?>?, String?>? {
@@ -352,6 +356,10 @@ internal open class BrowseService2 {
 
     open fun getChannel(channelId: String?, params: String?): Pair<List<MediaGroup?>?, String?>? {
         return getChannelTV(channelId, params) ?: getChannelWeb(channelId)?.let { Pair(it, null) }
+    }
+
+    fun getPlaylist(playlistId: String): Pair<List<MediaGroup?>?, String?>? {
+        return getBrowseRowsTV({ BrowseApiHelper.getChannelQuery(it, playlistId) }, MediaGroup.TYPE_USER_PLAYLISTS)
     }
 
     private fun getChannelWeb(channelId: String?, auth: Boolean = false): List<MediaGroup?>? {
