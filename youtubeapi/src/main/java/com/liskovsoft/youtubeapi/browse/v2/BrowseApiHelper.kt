@@ -60,6 +60,10 @@ internal object BrowseApiHelper {
         return PostDataHelper.createQuery(client.browseTemplate, HOME_TV)
     }
 
+    fun getWhatToWatchQuery(client: AppClient): String {
+        return PostDataHelper.createQuery(client.browseTemplate, WHAT_TO_WATCH)
+    }
+
     fun getTrendingQuery(client: AppClient): String {
         return PostDataHelper.createQuery(client.browseTemplate, TRENDING)
     }
