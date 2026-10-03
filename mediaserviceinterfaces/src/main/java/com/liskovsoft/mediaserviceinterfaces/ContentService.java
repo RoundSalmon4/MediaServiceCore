@@ -59,6 +59,10 @@ public interface ContentService {
     Observable<List<MediaGroup>> getGamingObserve();
     Observable<List<MediaGroup>> getChannelObserve(String channelId);
     Observable<List<MediaGroup>> getChannelObserve(MediaItem item);
+    /**
+     * The channel's Playlists tab (paged - use continueGroup to get more).
+     */
+    Observable<List<MediaGroup>> getChannelPlaylistsObserve(String channelId);
     Observable<List<MediaGroup>> getChannelSortingOptionsObserve(String channelId);
     Observable<List<MediaGroup>> getChannelSortingOptionsObserve(MediaItem item);
     Observable<MediaGroup> getChannelSearchObserve(String channelId, String query);

@@ -358,6 +358,18 @@ internal open class BrowseService2 {
         return getChannelTV(channelId, params) ?: getChannelWeb(channelId)?.let { Pair(it, null) }
     }
 
+    /**
+     * The channel's Playlists tab. Channels can publish thousands of playlists and the
+     * response is paged, so the caller keeps the returned group and continues it to get more.
+     */
+    fun getChannelPlaylists(channelId: String?): Pair<List<MediaGroup?>?, String?>? {
+        if (channelId == null) {
+            return null
+        }
+
+        return getBrowseRowsTV({ BrowseApiHelper.getChannelPlaylistsQuery(it, channelId) }, MediaGroup.TYPE_CHANNEL_UPLOADS)
+    }
+
     fun getPlaylist(playlistId: String): Pair<List<MediaGroup?>?, String?>? {
         return getBrowseRowsTV({ BrowseApiHelper.getChannelQuery(it, playlistId) }, MediaGroup.TYPE_USER_PLAYLISTS)
     }
