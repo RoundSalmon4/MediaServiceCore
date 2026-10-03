@@ -436,6 +436,23 @@ class YouTubeContentService implements ContentService {
         });
     }
 
+    @Override
+    public Observable<List<MediaGroup>> getChannelPlaylistsObserve(String channelId) {
+        return RxHelper.create(emitter -> {
+            checkSigned();
+
+            String canonicalId = UtilsService.canonicalChannelId(channelId);
+
+            kotlin.Pair<List<MediaGroup>, String> playlists = getBrowseService2().getChannelPlaylists(canonicalId);
+
+            if (playlists != null) {
+                emitGroups(emitter, playlists);
+            } else {
+                emitter.onComplete();
+            }
+        });
+    }
+
     @Nullable
     private List<MediaGroup> getChannelSortingOptions(String channelId) {
         checkSigned();
