@@ -304,6 +304,16 @@ internal fun ItemWrapper.getType(): Int {
             else -> MediaItem.TYPE_UNDEFINED
         }
 
+    // Lockups are the modern item shape (used by the channel Playlists tab). Without this
+    // they fall through as undefined, which hides them from anything filtering by type.
+    if (getLockupItem() != null)
+        return when {
+            getLockupItem()?.getPlaylistId() != null -> MediaItem.TYPE_PLAYLIST
+            getLockupItem()?.getChannelId() != null -> MediaItem.TYPE_CHANNEL
+            getLockupItem()?.getVideoId() != null -> MediaItem.TYPE_VIDEO
+            else -> MediaItem.TYPE_UNDEFINED
+        }
+
     return MediaItem.TYPE_UNDEFINED
 }
 
