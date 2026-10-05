@@ -137,7 +137,11 @@ public class YouTubeSignInService implements SignInService {
      * Authorization should be updated periodically (see expire_in field in response)
      */
     private String createAuthorizationHeader(String refreshToken) {
-        Log.d(TAG, "Updating authorization header...");
+        // A null refresh token is the normal state when nobody is signed in, so only
+        // report the token fetch when one was actually expected.
+        if (refreshToken != null) {
+            Log.d(TAG, "Updating authorization header...");
+        }
 
         String authorizationHeader = null;
 
@@ -145,7 +149,7 @@ public class YouTubeSignInService implements SignInService {
 
         if (token != null) {
             authorizationHeader = String.format("%s %s", token.getTokenType(), token.getAccessToken());
-        } else {
+        } else if (refreshToken != null) {
             Log.e(TAG, "Access token is null!");
         }
 
