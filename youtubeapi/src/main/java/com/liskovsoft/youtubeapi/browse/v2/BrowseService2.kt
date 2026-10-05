@@ -359,15 +359,26 @@ internal open class BrowseService2 {
     }
 
     /**
-     * The channel's Playlists tab. Channels can publish thousands of playlists and the
-     * response is paged, so the caller keeps the returned group and continues it to get more.
+     * The channel's Playlists tab. This has to be the web client: the tv client ignores the
+     * playlists params and answers with the channel's regular video rows, so the tab used to
+     * look like a couple of dozen playlists with no way to continue. The web client returns
+     * the playlists grid (about thirty per page) plus a continuation, so callers keep the
+     * returned group and continue it to get the next batch.
      */
     fun getChannelPlaylists(channelId: String?): Pair<List<MediaGroup?>?, String?>? {
         if (channelId == null) {
             return null
         }
 
-        return getBrowseRowsTV({ BrowseApiHelper.getChannelPlaylistsQuery(it, channelId) }, MediaGroup.TYPE_CHANNEL_UPLOADS)
+        val options = MediaGroupOptions.create(MediaGroup.TYPE_CHANNEL_UPLOADS, channelId)
+        val playlists = mBrowseApi.getBrowseResult(BrowseApiHelper.getChannelPlaylistsQuery(AppClient.WEB, channelId))
+
+        // The null section-list continuation leaves paging to the caller: the group's own
+        // continuation token drives it, instead of the tv-flavoured section walk in emitGroups.
+        return RetrofitHelper.get(playlists)?.let { result ->
+            val group: MediaGroup = BrowseMediaGroup(result, options)
+            Pair(listOf<MediaGroup?>(group), null)
+        }
     }
 
     fun getPlaylist(playlistId: String): Pair<List<MediaGroup?>?, String?>? {
