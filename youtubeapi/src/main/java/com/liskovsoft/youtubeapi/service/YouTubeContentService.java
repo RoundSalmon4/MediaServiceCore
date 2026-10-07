@@ -490,7 +490,10 @@ class YouTubeContentService implements ContentService {
 
     private void emitGroupsPartial(ObservableEmitter<List<MediaGroup>> emitter, kotlin.Pair<List<MediaGroup>, String> groupsAndKey) {
         if (groupsAndKey == null) {
-            Log.e(TAG, "emitGroupsPartial: groupsAndKey is null");
+            // The pair is null when the request itself produced nothing, e.g. a 400 from
+            // youtubei. Saying only that the pair was null hid that, so the reader had to
+            // find the OkHttp line above it by timestamp to learn what actually failed.
+            Log.e(TAG, "emitGroupsPartial: the request returned no result, so this feed stays empty");
             return;
         }
 
