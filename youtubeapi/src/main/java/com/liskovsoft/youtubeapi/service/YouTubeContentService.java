@@ -266,7 +266,7 @@ class YouTubeContentService implements ContentService {
         return RxHelper.create(emitter -> {
             checkSigned();
 
-            emitGroups(emitter, getBrowseService2().getHome());
+            emitGroups(emitter, getBrowseService2().getHome(), "getHome");
         });
     }
 
@@ -307,7 +307,7 @@ class YouTubeContentService implements ContentService {
         return RxHelper.create(emitter -> {
             checkSigned();
 
-            emitGroups(emitter, getBrowseService2().getTrending());
+            emitGroups(emitter, getBrowseService2().getTrending(), "getTrending");
         });
     }
 
@@ -343,7 +343,7 @@ class YouTubeContentService implements ContentService {
         return RxHelper.create(emitter -> {
             checkSigned();
 
-            emitGroups(emitter, getBrowseService2().getSports());
+            emitGroups(emitter, getBrowseService2().getSports(), "getSports");
         });
     }
 
@@ -352,7 +352,7 @@ class YouTubeContentService implements ContentService {
         return RxHelper.create(emitter -> {
             checkSigned();
 
-            emitGroups(emitter, getBrowseService2().getLive());
+            emitGroups(emitter, getBrowseService2().getLive(), "getLive");
         });
     }
 
@@ -375,7 +375,7 @@ class YouTubeContentService implements ContentService {
             MediaGroup firstRow = getBrowseService2().getLikedMusic();
             emitGroupsPartial(emitter, Collections.singletonList(firstRow));
 
-            emitGroups(emitter, getBrowseService2().getMusic());
+            emitGroups(emitter, getBrowseService2().getMusic(), "getMusic");
         });
     }
 
@@ -384,7 +384,7 @@ class YouTubeContentService implements ContentService {
         return RxHelper.create(emitter -> {
             checkSigned();
 
-            emitGroups(emitter, getBrowseService2().getNews());
+            emitGroups(emitter, getBrowseService2().getNews(), "getNews");
         });
     }
 
@@ -393,7 +393,7 @@ class YouTubeContentService implements ContentService {
         return RxHelper.create(emitter -> {
             checkSigned();
 
-            emitGroups(emitter, getBrowseService2().getGaming());
+            emitGroups(emitter, getBrowseService2().getGaming(), "getGaming");
         });
     }
 
@@ -422,11 +422,11 @@ class YouTubeContentService implements ContentService {
                     emitGroups(emitter, Collections.singletonList(gridChannel));
                 } else {
                     kotlin.Pair<List<MediaGroup>, String> channel = getBrowseService2().getChannel(canonicalId, params);
-                    emitGroups(emitter, channel);
+                    emitGroups(emitter, channel, "getChannel");
                 }
             } else {
                 kotlin.Pair<List<MediaGroup>, String> channel = getBrowseService2().getChannel(canonicalId, params);
-                emitGroups(emitter, channel);
+                emitGroups(emitter, channel, "getChannel");
             }
         });
     }
@@ -441,7 +441,7 @@ class YouTubeContentService implements ContentService {
             kotlin.Pair<List<MediaGroup>, String> playlists = getBrowseService2().getChannelPlaylists(canonicalId);
 
             if (playlists != null) {
-                emitGroups(emitter, playlists);
+                emitGroups(emitter, playlists, "getChannelPlaylists");
             } else {
                 emitter.onComplete();
             }
@@ -477,18 +477,18 @@ class YouTubeContentService implements ContentService {
         return RxHelper.fromCallable(() -> getChannelSearch(channelId, query));
     }
 
-    private void emitGroups(ObservableEmitter<List<MediaGroup>> emitter, kotlin.Pair<List<MediaGroup>, String> groupsAndKey) {
-        emitGroupsPartial(emitter, groupsAndKey);
+    private void emitGroups(ObservableEmitter<List<MediaGroup>> emitter, kotlin.Pair<List<MediaGroup>, String> groupsAndKey, String source) {
+        emitGroupsPartial(emitter, groupsAndKey, source);
 
         emitter.onComplete();
     }
 
-    private void emitGroupsPartial(ObservableEmitter<List<MediaGroup>> emitter, kotlin.Pair<List<MediaGroup>, String> groupsAndKey) {
+    private void emitGroupsPartial(ObservableEmitter<List<MediaGroup>> emitter, kotlin.Pair<List<MediaGroup>, String> groupsAndKey, String source) {
         if (groupsAndKey == null) {
             // The pair is null when the request itself produced nothing, e.g. a 400 from
             // youtubei. Saying only that the pair was null hid that, so the reader had to
             // find the OkHttp line above it by timestamp to learn what actually failed.
-            Log.e(TAG, "emitGroupsPartial: the request returned no result, so this feed stays empty");
+            Log.e(TAG, source + ": the request returned no result, so this feed stays empty");
             return;
         }
 
