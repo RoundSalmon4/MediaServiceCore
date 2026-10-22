@@ -98,6 +98,12 @@ public class RetrofitHelper {
 
         Response<T> response = getResponse(wrapper);
 
+        if (response != null && !response.isSuccessful()) {
+            // Without this the status is discarded: body() is null for any non-2xx, so the
+            // caller only ever sees null and the code is left in the OkHttp line above.
+            Log.w(TAG, "request failed: HTTP " + response.code() + " " + wrapper.request().url());
+        }
+
         if (withErrors) {
             // NOTE: Be careful. Best suited for transaction like methods (e.g. authentication).
             // Don't use it with BrowseService (invalid response) and others.
